@@ -26,9 +26,7 @@ const logger = winston.createLogger({
         transport
     ]
 })
-let borwserMaps = [],
-    borwserErrorMaps = [],
-    serverStatus = false
+let borwserMaps = []
 // 初始化
 const _init = async () => {
     for (const borwser of data){
@@ -36,10 +34,13 @@ const _init = async () => {
             ...borwser
         })
         await api.initSession()
-        borwserMaps[borwser.id] = api
-        borwserErrorMaps[borwser.id] = 0
+        borwserMaps[borwser.id] = {
+            api,
+            errCount: 0,
+            accessCount: 0,
+            serverStatus : true
+        }
     }
-    serverStatus = true
 }
 _init()
 
@@ -49,15 +50,41 @@ app.post("/chatgpt", async (req, res) => {
     const conversationId = req?.body?.conversationId
     const parentMessageId = req?.body?.parentMessageId
     
-    if(!serverStatus) {
-        return res.json({ code: 1, msg: 'system loading' })
-    }
-    // 获取使用哪一个账号进行访问
-
-    try {
     
+    // 获取使用哪一个账号进行访问
+    const allBrowserKeys = Object.keys(borwserMaps)
+    const tmp = Math.floor(Math.random() * allBrowserKeys.length);
+    const borwserId = allBrowserKeys[tmp]
+    const borwser = borwserMaps[server ?? borwserId]
+    try {
+        if(!borwser.serverStatus) {
+            return res.json({ code: 1, msg: 'system loading' })
+        }
+        if (!(await borwser.api.getIsAuthenticated())) {
+            borwser.serverStatus = false
+        }
+        let response = borwser.api.sendMessage(req?.body?.subject, {
+            conversationId,
+            parentMessageId
+        })
+        borwser.serverStatus = true
+        return res.json({ code: 0, msg:'success' , data: {
+            content : response.response,
+            conversation_id: response.conversationId,
+            parent_message_id : response.messageId,
+            server: borwserId
+        }})
     }catch(e) {
-        
+        console.log(e)
+        if(e.statusCode === 401){
+            delete borwserMaps[borwserId]
+        }
+        logger.error("borwserId:" + borwserId)
+        logger.error("ERROR:" + err.toString())
+        if(borwserMaps[borwserId].errCount >= 3){
+            
+        }
+        return res.json({ code: 1, msg: err.message })
     }
 })
 

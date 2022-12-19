@@ -34,7 +34,7 @@ const _init = async () => {
         const api = new ChatGPTAPIBrowser({
             ...borwser
         })
-        // await api.initSession()
+        await api.initSession()
 
         borwserMaps[borwser.id] = {
             api,
@@ -56,7 +56,6 @@ app.post("/chatgpt", async (req, res) => {
     const conversationId = req?.body?.conversationId
     const parentMessageId = req?.body?.parentMessageId
     const subject = req?.body?.subject
-    console.log(subject)
     if(!subject){
         return res.json({ code: 1, msg: 'subject error' })
     }

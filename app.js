@@ -13,6 +13,7 @@ const data = require('./.accountList.json')
 dotenv.config()
 const app = express()
 app.use(bodyParser.json({ limit: '50mb' }))
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 1000000 }));
 // 日志
 const transport = new winston.transports.DailyRotateFile({
     filename: './logs/application-%DATE%.log',
@@ -54,6 +55,10 @@ app.post("/chatgpt", async (req, res) => {
     const server = req?.body?.server
     const conversationId = req?.body?.conversationId
     const parentMessageId = req?.body?.parentMessageId
+    const subject = req?.body?.subject
+    if(!subject){
+        return res.json({ code: 1, msg: 'subject error' })
+    }
     
     
     // 获取使用哪一个账号进行访问

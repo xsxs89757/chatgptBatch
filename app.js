@@ -33,7 +33,7 @@ const _init = async () => {
         let api = new ChatGPTAPIBrowser({
             ...borwser
         })
-        await api.initSession()
+        // await api.initSession()
         borwserMaps[borwser.id] = {
             api,
             errCount: 0,
@@ -44,7 +44,13 @@ const _init = async () => {
 }
 _init()
 
-
+app.all('*', function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
+    res.header("Content-Type", "application/json;charset=utf-8");
+    next();
+})
 app.post("/chatgpt", async (req, res) => {
     const server = req?.body?.server
     const conversationId = req?.body?.conversationId
@@ -60,18 +66,18 @@ app.post("/chatgpt", async (req, res) => {
         if(!borwser.serverStatus) {
             return res.json({ code: 1, msg: 'system loading' })
         }
-        if (!(await borwser.api.getIsAuthenticated())) {
-            borwser.serverStatus = false
-        }
-        let response = borwser.api.sendMessage(req?.body?.subject, {
-            conversationId,
-            parentMessageId
-        })
+        // if (!(await borwser.api.getIsAuthenticated())) {
+        //     borwser.serverStatus = false
+        // }
+        // let response = borwser.api.sendMessage(req?.body?.subject, {
+        //     conversationId,
+        //     parentMessageId
+        // })
         borwser.serverStatus = true
         return res.json({ code: 0, msg:'success' , data: {
-            content : response.response,
-            conversation_id: response.conversationId,
-            parent_message_id : response.messageId,
+            // content : response.response,
+            // conversation_id: response.conversationId,
+            // parent_message_id : response.messageId,
             server: borwserId
         }})
     }catch(e) {

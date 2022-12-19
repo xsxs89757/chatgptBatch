@@ -56,6 +56,7 @@ app.post("/chatgpt", async (req, res) => {
     const conversationId = req?.body?.conversationId
     const parentMessageId = req?.body?.parentMessageId
     const subject = req?.body?.subject
+    console.log(req.body)
     if(!subject){
         return res.json({ code: 1, msg: 'subject error' })
     }

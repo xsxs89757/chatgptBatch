@@ -34,7 +34,7 @@ const _init = async () => {
         const api = new ChatGPTAPIBrowser({
             ...borwser
         })
-        await api.initSession()
+        // await api.initSession()
 
         borwserMaps[borwser.id] = {
             api,

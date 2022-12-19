@@ -53,8 +53,8 @@ app.all('*', function (req, res, next) {
 })
 app.post("/chatgpt", async (req, res) => {
     const server = req?.body?.server
-    const conversationId = req?.body?.conversationId
-    const parentMessageId = req?.body?.parentMessageId
+    const conversationId = req?.body?.conversation_id
+    const parentMessageId = req?.body?.parent_message_id
     const subject = req?.body?.subject
     if(!subject){
         return res.json({ code: 1, msg: 'subject error' })

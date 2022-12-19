@@ -89,6 +89,9 @@ app.post("/chatgpt", async (req, res) => {
         if(err.statusCode === 401){
             delete borwserMaps[borwserId]
         }
+        if(err.statusCode === 403) {
+            return res.json({ code: 1, msg: '服务繁忙,请稍后再试' })
+        }
         logger.error("borwserId:" + borwserId)
         logger.error("ERROR:" + err.toString())
         return res.json({ code: 1, msg: err.message })

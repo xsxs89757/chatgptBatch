@@ -56,7 +56,7 @@ app.post("/chatgpt", async (req, res) => {
     const conversationId = req?.body?.conversationId
     const parentMessageId = req?.body?.parentMessageId
     const subject = req?.body?.subject
-    console.log(req.body)
+    console.log(subject)
     if(!subject){
         return res.json({ code: 1, msg: 'subject error' })
     }
@@ -74,7 +74,7 @@ app.post("/chatgpt", async (req, res) => {
         if (!(await borwser.api.getIsAuthenticated())) {
             borwser.serverStatus = false
         }
-        let response = await borwser.api.sendMessage(req?.body?.subject, {
+        let response = await borwser.api.sendMessage(subject, {
             conversationId,
             parentMessageId
         })

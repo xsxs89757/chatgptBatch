@@ -66,18 +66,18 @@ app.post("/chatgpt", async (req, res) => {
         if(!borwser.serverStatus) {
             return res.json({ code: 1, msg: 'system loading' })
         }
-        // if (!(await borwser.api.getIsAuthenticated())) {
-        //     borwser.serverStatus = false
-        // }
-        // let response = borwser.api.sendMessage(req?.body?.subject, {
-        //     conversationId,
-        //     parentMessageId
-        // })
+        if (!(await borwser.api.getIsAuthenticated())) {
+            borwser.serverStatus = false
+        }
+        let response = borwser.api.sendMessage(req?.body?.subject, {
+            conversationId,
+            parentMessageId
+        })
         borwser.serverStatus = true
         return res.json({ code: 0, msg:'success' , data: {
-            // content : response.response,
-            // conversation_id: response.conversationId,
-            // parent_message_id : response.messageId,
+            content : response.response,
+            conversation_id: response.conversationId,
+            parent_message_id : response.messageId,
             server: borwserId
         }})
     }catch(e) {

@@ -1,0 +1,9 @@
+[
+    {
+        "id": "1",
+        "email": "xxxxxxx",
+        "password": "xxxxxxx",
+        "isGoogleLogin": false,
+        "proxyServer": null
+    }
+]

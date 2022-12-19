@@ -1,0 +1,21 @@
+{
+  "name": "chatgptbatchbrowser",
+  "version": "1.0.0",
+  "description": "chatgpt plugin",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "lei.wang",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.1",
+    "chatgpt": "^3.3.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "puppeteer": "^19.4.1",
+    "winston": "^3.8.2",
+    "winston-daily-rotate-file": "^4.7.1"
+  }
+}

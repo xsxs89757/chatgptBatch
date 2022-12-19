@@ -62,10 +62,10 @@ app.post("/chatgpt", async (req, res) => {
     const tmp = Math.floor(Math.random() * allBrowserKeys.length);
     const borwserId = allBrowserKeys[tmp]
     const borwser = borwserMaps[server ?? borwserId]
+    if(!borwser?.serverStatus) {
+        return res.json({ code: 1, msg: 'system loading' })
+    }
     try {
-        if(!borwser.serverStatus) {
-            return res.json({ code: 1, msg: 'system loading' })
-        }
         if (!(await borwser.api.getIsAuthenticated())) {
             borwser.serverStatus = false
         }

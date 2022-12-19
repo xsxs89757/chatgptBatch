@@ -5,12 +5,5 @@
         "password": "xxxxxxx",
         "isGoogleLogin": false,
         "proxyServer": null
-    },
-    {
-        "id": "2",
-        "email": "836866487@qq.com",
-        "password": "z1337140",
-        "isGoogleLogin": false,
-        "proxyServer": null
     }
 ]

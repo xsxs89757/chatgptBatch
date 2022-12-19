@@ -30,14 +30,13 @@ let borwserMaps = []
 // 初始化
 const _init = async () => {
     for (const borwser of data){
-        let api = new ChatGPTAPIBrowser({
+        const api = new ChatGPTAPIBrowser({
             ...borwser
         })
         await api.initSession()
+
         borwserMaps[borwser.id] = {
             api,
-            errCount: 0,
-            accessCount: 0,
             serverStatus : true
         }
     }
@@ -69,7 +68,7 @@ app.post("/chatgpt", async (req, res) => {
         if (!(await borwser.api.getIsAuthenticated())) {
             borwser.serverStatus = false
         }
-        let response = borwser.api.sendMessage(req?.body?.subject, {
+        let response = await borwser.api.sendMessage(req?.body?.subject, {
             conversationId,
             parentMessageId
         })
@@ -80,16 +79,13 @@ app.post("/chatgpt", async (req, res) => {
             parent_message_id : response.messageId,
             server: borwserId
         }})
-    }catch(e) {
-        console.log(e)
-        if(e.statusCode === 401){
+    }catch(err) {
+        console.log(err)
+        if(err.statusCode === 401){
             delete borwserMaps[borwserId]
         }
         logger.error("borwserId:" + borwserId)
         logger.error("ERROR:" + err.toString())
-        if(borwserMaps[borwserId].errCount >= 3){
-            
-        }
         return res.json({ code: 1, msg: err.message })
     }
 })

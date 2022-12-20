@@ -92,8 +92,10 @@ app.post("/chatgpt", async (req, res) => {
         if(err.statusCode === 403) {
             return res.json({ code: 1, msg: '服务繁忙,请稍后再试' })
         }
-        logger.error("borwserId:" + borwserId)
+        logger.error("ERROR_TIME:"+getCurrentTime())
+        logger.error("BORWSER_ID:" + borwserId)
         logger.error("ERROR:" + err.toString())
+        logger.error("--------------------------------")
         return res.json({ code: 1, msg: err.message })
     }
 })
@@ -101,3 +103,18 @@ app.post("/chatgpt", async (req, res) => {
 app.listen(process.env.APP_PORT, process.env.APP_HOST_NAME, function () {
     console.log(`服务器运行在http://${process.env.APP_HOST_NAME}:${process.env.APP_PORT}`);
 })
+
+function getCurrentTime() {
+    var date = new Date();//当前时间
+    var month = zeroFill(date.getMonth() + 1);//月
+    var day = zeroFill(date.getDate());//日
+    var hour = zeroFill(date.getHours());//时
+    var minute = zeroFill(date.getMinutes());//分
+    var second = zeroFill(date.getSeconds());//秒
+    
+    //当前时间
+    var curTime = date.getFullYear() + "-" + month + "-" + day
+            + " " + hour + ":" + minute + ":" + second;
+    
+    return curTime;
+}

@@ -96,7 +96,7 @@ app.post("/chatgpt", async (req, res) => {
         logger.error("BORWSER_ID:" + borwserId)
         logger.error("ERROR:" + err.toString())
         logger.error("--------------------------------")
-        return res.json({ code: 1, msg: err.message })
+        return res.json({ code: 1, msg: "服务繁忙,请重试" })
     }
 })
 

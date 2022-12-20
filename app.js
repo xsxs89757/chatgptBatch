@@ -75,7 +75,8 @@ app.post("/chatgpt", async (req, res) => {
         }
         let response = await borwser.api.sendMessage(subject, {
             conversationId,
-            parentMessageId
+            parentMessageId,
+            timeoutMs: 2 * 60 * 1000
         })
         borwser.serverStatus = true
         return res.json({ code: 0, msg:'success' , data: {

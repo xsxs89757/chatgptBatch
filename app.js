@@ -118,3 +118,14 @@ function getCurrentTime() {
     
     return curTime;
 }
+
+/**
+ * 补零
+ */
+function zeroFill(i){
+    if (i >= 0 && i <= 9) {
+        return "0" + i;
+    } else {
+        return i;
+    }
+}

@@ -60,7 +60,6 @@ app.post("/chatgpt", async (req, res) => {
         return res.json({ code: 1, msg: 'subject error' })
     }
     
-    
     // 获取使用哪一个账号进行访问
     const allBrowserKeys = Object.keys(borwserMaps)
     const tmp = Math.floor(Math.random() * allBrowserKeys.length);
@@ -83,7 +82,7 @@ app.post("/chatgpt", async (req, res) => {
             content : response.response,
             conversation_id: response.conversationId,
             parent_message_id : response.messageId,
-            server: borwserId
+            server: server ?? borwserId
         }})
     }catch(err) {
         console.log(err)

@@ -67,7 +67,7 @@ app.post("/chatgpt", async (req, res) => {
     const borwserId = allBrowserKeys[tmp]
     const borwser = borwserMaps[server ?? borwserId]
     if(!borwser?.serverStatus) {
-        return res.json({ code: 1, msg: 'system loading' })
+        return res.json({ code: 1, msg: '系统加载中...请稍后' })
     }
     try {
         if (!(await borwser.api.getIsAuthenticated())) {

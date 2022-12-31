@@ -27,7 +27,7 @@ const logger = winston.createLogger({
         transport
     ]
 })
-let borwserMaps = []
+let borwserMaps = [], chooseMaps = [], expMaps = []
 // 初始化
 const _init = async () => {
     for (const borwser of data){
@@ -59,14 +59,27 @@ app.post("/chatgpt", async (req, res) => {
     if(!subject){
         return res.json({ code: 1, msg: 'subject error' })
     }
-    
+    expMaps.forEach((item, key) =>{
+        if(item.exp <= new Date().getTime()){
+            borwserMaps[item.id] =item.borwser
+            delete expMaps[key]
+        }
+    })
+
     // 获取使用哪一个账号进行访问
-    const allBrowserKeys = Object.keys(borwserMaps)
+    let allBrowserKeys = Object.keys(borwserMaps)
+    if(allBrowserKeys.length < 1){
+        borwserMaps = chooseMaps
+        chooseMaps = []
+        allBrowserKeys = Object.keys(borwserMaps)
+    }
+    // console.log(allBrowserKeys.length)
+    // console.log('chooseMaps', Object.keys(chooseMaps))
     const tmp = Math.floor(Math.random() * allBrowserKeys.length);
     const borwserId = allBrowserKeys[tmp]
-    const borwser = borwserMaps[server ?? borwserId]
+    const borwser = borwserMaps[server ?? borwserId] ?? chooseMaps[server]
     if(!borwser?.serverStatus) {
-        return res.json({ code: 1, msg: '系统加载中...请稍后' })
+        return res.json({ code: 1, msg: '帐号加载中...请稍后' })
     }
     try {
         if (!(await borwser.api.getIsAuthenticated())) {
@@ -78,6 +91,12 @@ app.post("/chatgpt", async (req, res) => {
             timeoutMs: 3 * 60 * 1000
         })
         borwser.serverStatus = true
+        if(!server && chooseMaps.indexOf(borwserId) === -1){
+            chooseMaps[borwserId] = borwser
+            delete borwserMaps[borwserId]
+        }
+        
+
         return res.json({ code: 0, msg:'success' , data: {
             content : response.response,
             conversation_id: response.conversationId,
@@ -91,6 +110,11 @@ app.post("/chatgpt", async (req, res) => {
         }
         if(err.statusCode === 403) {
             return res.json({ code: 1, msg: '服务繁忙,请稍后再试' })
+        }
+        if(err.statusCode === 429){
+            expMaps.push({ id: server ?? borwserId, borwser:borwser, exp: new Date().getTime() + 70 * 60 * 1000})
+            delete borwserMaps[server ?? borwserId]
+            return res.json({ code: 1, msg: '该服务账号被屏蔽,请1小时后重试该账号' })
         }
         logger.error("ERROR_TIME:"+getCurrentTime())
         logger.error("BORWSER_ID:" + borwserId)

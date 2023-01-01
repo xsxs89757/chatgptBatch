@@ -75,8 +75,8 @@ app.post("/chatgpt", async (req, res) => {
     }
     // console.log(allBrowserKeys.length)
     // console.log('chooseMaps', Object.keys(chooseMaps))
-    const tmp = Math.floor(Math.random() * allBrowserKeys.length);
-    const borwserId = allBrowserKeys[tmp]
+    // const tmp = Math.floor(Math.random() * allBrowserKeys.length);
+    const borwserId = allBrowserKeys[0]
     const borwser = borwserMaps[server ?? borwserId] ?? chooseMaps[server]
     if(!borwser?.serverStatus) {
         return res.json({ code: 1, msg: '帐号加载中...请稍后' })

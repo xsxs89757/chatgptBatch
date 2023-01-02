@@ -110,14 +110,14 @@ app.post("/chatgpt", async (req, res) => {
         logger.error("ERROR:" + err.toString())
         logger.error("--------------------------------")
         if(err.statusCode === 401){
-            // borwserMaps[borwserId].resetSession() // 重新登录
-            // delete borwserMaps[borwserId]
+            borwserMaps[borwserId].resetSession() // 重新登录
+            delete borwserMaps[borwserId]
         }else if(err.statusCode === 403) {
-            // borwserMaps[borwserId].refreshSession() // 强制刷新session 
+            borwserMaps[borwserId].refreshSession() // 强制刷新session 
             return res.json({ code: 1, msg: '服务繁忙,请稍后再试' })
         }else if(err.statusCode === 429){
-            // expMaps.push({ id: server ?? borwserId, borwser:borwser, exp: new Date().getTime() + 60 * 60 * 1000})
-            // delete borwserMaps[server ?? borwserId]
+            expMaps.push({ id: server ?? borwserId, borwser:borwser, exp: new Date().getTime() + 60 * 60 * 1000})
+            delete borwserMaps[server ?? borwserId]
             return res.json({ code: 1, msg: '该服务账号被屏蔽,请1小时后重试该账号' })
         }
         return res.json({ code: 1, msg: "服务繁忙,请重试" })

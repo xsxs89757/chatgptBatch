@@ -73,6 +73,9 @@ app.post("/chatgpt", async (req, res) => {
         chooseMaps = []
         allBrowserKeys = Object.keys(borwserMaps)
     }
+    if (allBrowserKeys.length === 0){
+        return res.json({ code: 1, msg: '所有账号请求都已经限量,请等1个时候后重试' })
+    }
     // console.log(allBrowserKeys.length)
     // console.log('chooseMaps', Object.keys(chooseMaps))
     // const tmp = Math.floor(Math.random() * allBrowserKeys.length);

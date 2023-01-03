@@ -17,8 +17,8 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 1
 // 日志
 const transport = new winston.transports.DailyRotateFile({
     filename: './logs/application-%DATE%.log',
-    datePattern: 'YYYY-MM-DD-HH',
-    zippedArchive: true,
+    datePattern: 'YYYY-MM-DD',
+    zippedArchive: false,
     maxSize: '20m',
     maxFiles: '7d'
 });

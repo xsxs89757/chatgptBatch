@@ -113,10 +113,10 @@ app.post("/chatgpt", async (req, res) => {
         logger.error("ERROR:" + err.toString())
         logger.error("--------------------------------")
         if(err.statusCode === 401){
-            borwserMaps[borwserId].initSession() // 重新登录
+            await borwserMaps[borwserId].initSession() // 重新登录
             // delete borwserMaps[borwserId]
         }else if(err.statusCode === 403) {
-            borwserMaps[borwserId].refreshSession() // 强制刷新session 
+            await borwserMaps[borwserId].refreshSession() // 强制刷新session 
             return res.json({ code: 1, msg: '服务繁忙,请稍后再试' })
         }else if(err.statusCode === 429){
             expMaps.push({ id: server ?? borwserId, borwser:borwser, exp: new Date().getTime() + 60 * 60 * 1000})

@@ -114,7 +114,7 @@ app.post("/chatgpt", async (req, res) => {
         logger.error("--------------------------------")
         if(err.statusCode === 401){
             console.log(borwserId)
-            await borwserMaps[borwserId].initSession() // 重新登录
+            // await borwserMaps[borwserId].initSession() // 重新登录
             // delete borwserMaps[borwserId]
         }else if(err.statusCode === 403) {
             await borwserMaps[borwserId].refreshSession() // 强制刷新session 

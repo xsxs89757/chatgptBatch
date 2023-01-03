@@ -81,19 +81,16 @@ app.post("/chatgpt", async (req, res) => {
     // const tmp = Math.floor(Math.random() * allBrowserKeys.length);
     const borwserId = allBrowserKeys[0]
     const borwser = borwserMaps[server ?? borwserId] ?? chooseMaps[server]
-    if(!borwser?.serverStatus) {
+    if (!(await borwser.api.getIsAuthenticated())) {
+        // borwser.serverStatus = false
         return res.json({ code: 1, msg: '帐号加载中...请稍后' })
     }
     try {
-        if (!(await borwser.api.getIsAuthenticated())) {
-            borwser.serverStatus = false
-        }
         let response = await borwser.api.sendMessage(subject, {
             conversationId,
             parentMessageId,
             timeoutMs: 3 * 60 * 1000
         })
-        borwser.serverStatus = true
         if(!server && chooseMaps.indexOf(borwserId) === -1){
             chooseMaps[borwserId] = borwser
             delete borwserMaps[borwserId]

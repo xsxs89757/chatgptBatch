@@ -81,8 +81,7 @@ app.post("/chatgpt", async (req, res) => {
     // const tmp = Math.floor(Math.random() * allBrowserKeys.length);
     const borwserId = allBrowserKeys[0]
     const borwser = borwserMaps[server ?? borwserId] ?? chooseMaps[server]
-    if (!(await borwser.api.getIsAuthenticated())) {
-        // borwser.serverStatus = false
+    if(!borwser?.serverStatus) {
         return res.json({ code: 1, msg: '帐号加载中...请稍后' })
     }
     try {
@@ -91,6 +90,7 @@ app.post("/chatgpt", async (req, res) => {
             parentMessageId,
             timeoutMs: 3 * 60 * 1000
         })
+        borwser.serverStatus = true
         if(!server && chooseMaps.indexOf(borwserId) === -1){
             chooseMaps[borwserId] = borwser
             delete borwserMaps[borwserId]
@@ -114,7 +114,9 @@ app.post("/chatgpt", async (req, res) => {
             // await borwserMaps[borwserId].initSession() // 重新登录
             // delete borwserMaps[borwserId]
         }else if(err.statusCode === 403) {
+            borwser.serverStatus = false
             await borwserMaps[borwserId].refreshSession() // 强制刷新session 
+            borwser.serverStatus = true
             return res.json({ code: 1, msg: '服务繁忙,请稍后再试' })
         }else if(err.statusCode === 429){
             expMaps.push({ id: server ?? borwserId, borwser:borwser, exp: new Date().getTime() + 60 * 60 * 1000})

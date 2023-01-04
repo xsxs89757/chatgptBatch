@@ -100,16 +100,18 @@ app.post("/chatgpt", async (req, res) => {
     //     return res.json({ code: 1, msg: '帐号加载中...请稍后' })
     // }
     try {
+        if(!server && chooseMaps.indexOf(borwserId) === -1){
+            chooseMaps[borwserId] = borwser
+            delete borwserMaps[borwserId]
+        }
+        
         let response = await borwser.api.sendMessage(subject, {
             conversationId,
             parentMessageId,
             timeoutMs: 3 * 60 * 1000
         })
         // borwser.serverStatus = true
-        if(!server && chooseMaps.indexOf(borwserId) === -1){
-            chooseMaps[borwserId] = borwser
-            delete borwserMaps[borwserId]
-        }
+        
         
 
         return res.json({ code: 0, msg:'success' , data: {

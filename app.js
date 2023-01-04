@@ -27,10 +27,13 @@ const logger = winston.createLogger({
         transport
     ]
 })
-let borwserMaps = [], chooseMaps = [], expMaps = []
+let borwserMaps = [], intervalMaps = [], chooseMaps = [], expMaps = []
 // 初始化
-const _init = async () => {
+const _init = async (borwserId = null) => {
     for (const borwser of data){
+        if(borwserId !== null && borwserId != borwser.id){
+            continue
+        }
         const api = new ChatGPTAPIBrowser({
             ...borwser
         })
@@ -39,6 +42,15 @@ const _init = async () => {
         borwserMaps[borwser.id] = {
             api,
             serverStatus : true
+        }
+        intervalMaps[borwser.id] = {
+            interval: setInterval( async()=>{
+                if(borwserMaps.indexOf(borwser.id) !== -1){
+                    borwserMaps[borwser.id].serverStatus = false
+                    await borwserMaps[borwser.id].refreshSession()
+                    borwserMaps[borwser.id].serverStatus = true
+                }
+            }, 60 * 60 * 1000)
         }
     }
 }
@@ -84,13 +96,16 @@ app.post("/chatgpt", async (req, res) => {
     if(!borwser?.serverStatus) {
         return res.json({ code: 1, msg: '帐号加载中...请稍后' })
     }
+    // if (!(await borwser.api.getIsAuthenticated())) {
+    //     return res.json({ code: 1, msg: '帐号加载中...请稍后' })
+    // }
     try {
         let response = await borwser.api.sendMessage(subject, {
             conversationId,
             parentMessageId,
             timeoutMs: 3 * 60 * 1000
         })
-        borwser.serverStatus = true
+        // borwser.serverStatus = true
         if(!server && chooseMaps.indexOf(borwserId) === -1){
             chooseMaps[borwserId] = borwser
             delete borwserMaps[borwserId]
@@ -114,12 +129,10 @@ app.post("/chatgpt", async (req, res) => {
             // await borwserMaps[borwserId].initSession() // 重新登录
             // delete borwserMaps[borwserId]
         }else if(err.statusCode === 403) {
-            borwser.serverStatus = false
             await borwserMaps[borwserId].refreshSession() // 强制刷新session 
-            borwser.serverStatus = true
             return res.json({ code: 1, msg: '服务繁忙,请稍后再试' })
         }else if(err.statusCode === 429){
-            expMaps.push({ id: server ?? borwserId, borwser:borwser, exp: new Date().getTime() + 60 * 60 * 1000})
+            expMaps.push({ id: server ?? borwserId, borwser:borwser, exp: new Date().getTime() + (30 * 60 * 1000)})
             delete borwserMaps[server ?? borwserId]
             return res.json({ code: 1, msg: '该服务账号被屏蔽,请1小时后重试该账号' })
         }

@@ -110,6 +110,7 @@ app.post("/chatgpt", async (req, res) => {
             parentMessageId,
             timeoutMs: 3 * 60 * 1000
         })
+        console.log(response)
         // borwser.serverStatus = true
         
         

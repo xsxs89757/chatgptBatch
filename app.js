@@ -37,7 +37,13 @@ const _init = async (borwserId = null) => {
         const api = new ChatGPTAPIBrowser({
             ...borwser
         })
-        await api.initSession()
+        try{
+            await api.initSession()
+        }catch(err){
+            console.log("start err")
+            console.log(err)
+            await api.initSession()
+        }
 
         borwserMaps[borwser.id] = {
             api,
@@ -54,7 +60,7 @@ const _init = async (borwserId = null) => {
         }
     }
 }
-_init()
+
 
 app.all('*', function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");

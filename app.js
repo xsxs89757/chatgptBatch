@@ -56,7 +56,14 @@ const _init = async (borwserId = null) => {
                     await borwserMaps[borwser.id].refreshSession()
                     borwserMaps[borwser.id].serverStatus = true
                 }
-            }, 60 * 60 * 1000)
+            }, 60 * 60 * 1000),
+            intervalReset: setInterval( async()=>{
+                if(borwserMaps.indexOf(borwser.id) !== -1){
+                    borwserMaps[borwser.id].serverStatus = false
+                    await borwserMaps[borwser.id].resetSession()
+                    borwserMaps[borwser.id].serverStatus = true
+                }
+            }, 24 * 60 * 60 * 1000),
         }
     }
 }

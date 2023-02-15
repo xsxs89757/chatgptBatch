@@ -76,11 +76,54 @@ app.all('*', function (req, res, next) {
     res.header("Content-Type", "application/json;charset=utf-8");
     next();
 })
+
+let clients = [];
+
+app.get('/status', (request, response) => response.json({clients: clients.length}));
+
+function eventsHandler(request, response) {
+    const  clientId = request.query?.id
+    if(!clientId){
+        return res.json({ code: 1, msg: 'clientId error' })
+    }
+    const headers = {
+      'Content-Type': 'text/event-stream',
+      'Connection': 'keep-alive',
+      'Cache-Control': 'no-cache'
+    };
+    response.writeHead(200, headers);
+  
+    // response.write();
+  
+    const newClient = {
+      id: clientId,
+      response
+    };
+  
+    clients.push(newClient);
+  
+    request.on('close', () => {
+      console.log(`${clientId} Connection closed`);
+      clients = clients.filter(client => client.id !== clientId);
+    });
+  }
+  
+app.get('/events', eventsHandler);
+
+function sendEventsToAll(text, clientId) {
+    clients.forEach((client)=>{
+        if(client.id === clientId){
+            client.response.write(`${text}`)
+        }
+    })
+}
+
 app.post("/chatgpt", async (req, res) => {
     const server = req?.body?.server
     const conversationId = req?.body?.conversation_id
     const parentMessageId = req?.body?.parent_message_id
     const subject = req?.body?.subject
+    const clientId = req?.body?.client_id
     if(!subject){
         return res.json({ code: 1, msg: 'subject error' })
     }
@@ -121,11 +164,13 @@ app.post("/chatgpt", async (req, res) => {
         let response = await borwser.api.sendMessage(subject, {
             conversationId,
             parentMessageId,
-            timeoutMs: 3 * 60 * 1000
+            timeoutMs: 3 * 60 * 1000,
+            onProgress: (partialResponse) => {
+                sendEventsToAll(partialResponse.text, clientId)
+            }
         })
-        // borwser.serverStatus = true
         
-        
+        sendEventsToAll("[DONE]", clientId)
 
         return res.json({ code: 0, msg:'success' , data: {
             content : response.response,

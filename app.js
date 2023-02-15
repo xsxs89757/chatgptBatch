@@ -166,6 +166,7 @@ app.post("/chatgpt", async (req, res) => {
             parentMessageId,
             timeoutMs: 3 * 60 * 1000,
             onProgress: (partialResponse) => {
+                console.log(partialResponse)
                 sendEventsToAll(partialResponse.text, clientId)
             }
         })
